@@ -35,4 +35,4 @@ def root():
 app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
 app.include_router(qna.router, prefix="/api/qna", tags=["QnA"])
 app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
-app.include_router(event.router, prefix="/api/event", tags=["Event"])
+app.include_router(event.router, prefix="/api/events", tags=["Event"])

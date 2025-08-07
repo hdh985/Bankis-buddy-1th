@@ -5,9 +5,39 @@ from app.databases.models.event import Event
 from app.api.shcemas.event import EventCreate, EventOut
 from app.databases.database import get_db
 from app.api.dependencies import get_current_admin_user  # 관리자 권한 체크
+from fastapi import UploadFile, File, Form
 
 router = APIRouter()
 
+@router.post("/form", response_model=EventOut)
+async def create_event_with_image(
+    title: str = Form(...),
+    link_url: str = Form(...),
+    start_date: date = Form(...),
+    end_date: date = Form(...),
+    image: UploadFile = File(None),
+    db: Session = Depends(get_db),
+    user=Depends(get_current_admin_user)
+):
+    image_url = None
+
+    if image:
+        # TODO: GCS에 업로드하고 공개 URL 얻기
+        image_url = await upload_to_gcs("your-gcs-bucket-name", image)
+
+    new_event = Event(
+        title=title,
+        link_url=link_url,
+        start_date=start_date,
+        end_date=end_date,
+        image_url=image_url
+    )
+
+    db.add(new_event)
+    db.commit()
+    db.refresh(new_event)
+
+    return _to_event_out(new_event)
 # 관리자만 이벤트 등록
 @router.post("/", response_model=EventOut)
 def create_event(event: EventCreate, db: Session = Depends(get_db), user=Depends(get_current_admin_user)):
