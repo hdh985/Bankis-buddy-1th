@@ -34,6 +34,13 @@ jobs:
           REACT_APP_VERSION: 1.0.0
         run: npm run build
 
+      # ✅ 인증 단계 추가
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY_JSON }}
+
+      # ✅ 인증 후 GCS 업로드
       - name: Upload to GCP Cloud Storage
         uses: google-github-actions/upload-cloud-storage@v1
         with:
@@ -45,5 +52,3 @@ jobs:
         run: |
           echo 'Setting Cache-Control metadata...'
           gsutil -m setmeta -h "Cache-Control:no-store" gs://${{ secrets.GCP_FRONTEND_BUCKET }}/**
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_SA_KEY_JSON }}
