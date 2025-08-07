@@ -53,4 +53,5 @@ jobs:
           echo 'Setting Cache-Control metadata...'
           gsutil -m setmeta -h "Cache-Control:no-store" gs://${{ secrets.GCP_FRONTEND_BUCKET }}/**
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_SA_KEY_JSON }}
+          CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE: ${{ secrets.GCP_SA_KEY_JSON }}
+
