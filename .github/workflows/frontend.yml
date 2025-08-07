@@ -54,5 +54,4 @@ jobs:
         run: |
           echo 'Setting Cache-Control metadata...'
           gsutil -m setmeta -h "Cache-Control:no-store" gs://${{ secrets.GCP_FRONTEND_BUCKET }}/**
-        env:
-          CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE: ${{ steps.auth.outputs.credentials_file_path }}
+      
