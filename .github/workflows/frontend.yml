@@ -36,6 +36,7 @@ jobs:
 
       # ✅ 인증 단계 추가
       - name: Authenticate to Google Cloud
+        id: auth
         uses: google-github-actions/auth@v1
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY_JSON }}
