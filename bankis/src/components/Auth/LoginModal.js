@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 
 const LoginModal = ({ show, onClose }) => {
-  const [credentials, setCredentials] = useState({ username: '', password: '' });
+  const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const { login } = useAuth();
@@ -17,7 +17,7 @@ const LoginModal = ({ show, onClose }) => {
     
     if (result.success) {
       onClose();
-      setCredentials({ username: '', password: '' });
+      setCredentials({ email: '', password: '' });
     } else {
       setError(result.error || '로그인에 실패했습니다.');
     }
@@ -55,14 +55,14 @@ const LoginModal = ({ show, onClose }) => {
           )}
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">아이디</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">아이디 (이메일)</label>
             <input
               type="text"
-              name="username"
-              value={credentials.username}
+              name="email"
+              value={credentials.email}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="버디 활동 인원 아이디"
+              placeholder="이메일 주소 입력"
               required
               disabled={isLoading}
             />
@@ -93,7 +93,7 @@ const LoginModal = ({ show, onClose }) => {
         
         <div className="mt-4 p-3 bg-gray-50 rounded-lg">
           <p className="text-xs text-gray-600 text-center">
-            일반 사용자는 로그인 없이<br/>
+            일반 사용자는 로그인 없이<br />
             모든 기능을 익명으로 이용할 수 있습니다.
           </p>
         </div>

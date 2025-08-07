@@ -34,7 +34,7 @@ const Header = ({ onShowLogin }) => {
               onClick={onShowLogin}
               className="px-3 py-1 bg-white/20 rounded-full text-xs hover:bg-white/30 transition-colors"
             >
-              관리자
+              로그인
             </button>
           )}
           <button className="p-2 bg-white/20 rounded-full">

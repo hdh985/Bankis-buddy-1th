@@ -95,7 +95,7 @@ const HomeView = ({ onNavigate }) => {
         </div>
         <div>
           <div className="text-xl font-bold text-gray-900">{stats.messages}</div>
-          <div className="text-xs text-gray-500">익명 대화</div>
+          <div className="text-xs text-gray-500">질문 수</div>
         </div>
       </div>
     </div>

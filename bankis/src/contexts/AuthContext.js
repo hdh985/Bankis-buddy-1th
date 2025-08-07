@@ -21,35 +21,43 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  const checkAuth = async () => {
-    try {
-      const token = localStorage.getItem('buddy_token');
-      if (token) {
-        const userData = await authAPI.verifyToken(token);
-        setUser(userData);
-        setIsAdmin(userData.role === 'admin');
-      }
-    } catch (error) {
-      localStorage.removeItem('buddy_token');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const login = async (credentials) => {
-    try {
-      const response = await authAPI.login(credentials);
-      const { token, user: userData } = response;
-      
-      localStorage.setItem('buddy_token', token);
+const checkAuth = async () => {
+  try {
+    const token = localStorage.getItem('buddy_token');
+    console.log('[DEBUG] token from localStorage in checkAuth:', token);
+    if (token) {
+      const userData = await authAPI.verifyToken(); // 헤더에 토큰 자동 포함됨
       setUser(userData);
-      setIsAdmin(userData.role === 'admin');
-      
-      return { success: true };
-    } catch (error) {
-      return { success: false, error: error.message };
+      setIsAdmin(userData.is_admin);  // 실제 값에 따라 처리
     }
-  };
+  } catch (error) {
+    localStorage.removeItem('buddy_token');
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
+const login = async (credentials) => {
+  try {
+    const response = await authAPI.login(credentials);
+    const { access_token, user_id } = response;
+
+    localStorage.setItem('buddy_token', access_token);
+    setUser({ id: user_id });  // ✅ 일단 기본 세팅
+    setIsAdmin(false);
+    console.log('[DEBUG] login() called with:', credentials);
+    console.log('[DEBUG] login() response:', response);
+
+    // ✅ 서버에서 최신 사용자 정보 다시 fetch
+    await checkAuth();
+
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
 
   const logout = async () => {
     try {
