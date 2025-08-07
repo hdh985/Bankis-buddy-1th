@@ -17,12 +17,7 @@ const ChatView = () => {
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [suggestedQuestions] = useState([
-    "프론트엔드 개발자가 되려면 어떤 스킬이 필요한가요?",
-    "UX 디자이너 포트폴리오 만드는 법을 알려주세요",
-    "마케팅 분야로 이직하고 싶은데 조언 부탁드려요",
-    "개발자 면접에서 자주 나오는 질문들이 궁금해요"
-  ]);
+ 
   const messagesEndRef = useRef(null);
 
   const quickActions = [
