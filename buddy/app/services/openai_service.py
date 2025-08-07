@@ -1,16 +1,12 @@
-import openai
-import os
-from dotenv import load_dotenv
+# app/services/openai_service.py
 
-load_dotenv()  # .env 불러오기
-openai.api_key = os.getenv("OPENAI_API_KEY")
+from openai import OpenAI
 
-async def ask_chatgpt(message: str) -> str:
-    response = await openai.ChatCompletion.acreate(
+client = OpenAI()  # API 키는 .env 또는 환경변수에서 자동으로 읽힘
+
+def ask_chatgpt(message: str) -> str:
+    response = client.chat.completions.create(
         model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "너는 친절한 뱅키스 서포터즈 전용 챗봇이야."},
-            {"role": "user", "content": message}
-        ]
+        messages=[{"role": "user", "content": message}]
     )
-    return response["choices"][0]["message"]["content"]
+    return response.choices[0].message.content

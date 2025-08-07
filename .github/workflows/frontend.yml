@@ -1,0 +1,42 @@
+name: Frontend Deploy to GCP Storage
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'bankis/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        working-directory: ./bankis
+        run: npm install
+
+      - name: Build
+        working-directory: ./bankis
+        run: npm run build
+
+      - name: Upload to GCP Cloud Storage
+        uses: google-github-actions/upload-cloud-storage@v1
+        with:
+          path: ./bankis/build
+          destination: ${{ secrets.GCP_FRONTEND_BUCKET }}
+          parent: false
+
+      - name: Set metadata (Cache-Control)
+        run: |
+          echo 'Setting Cache-Control metadata...'
+          gsutil -m setmeta -h "Cache-Control:no-store" gs://${{ secrets.GCP_FRONTEND_BUCKET }}/**
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_SA_KEY_JSON }}

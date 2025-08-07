@@ -1,4 +1,36 @@
-fastapi
-uvicorn
-openai
-python-dotenv
+# === FastAPI 기반 서버 프레임워크 ===
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+
+# === 환경변수 관리 ===
+python-dotenv>=1.0.1
+
+# === OpenAI 연동 ===
+openai>=1.30.0
+
+# === 데이터베이스 관련 ===
+sqlalchemy>=2.0.30
+mysql-connector-python>=8.3.0
+# 또는 mysqlclient 사용 시 (Linux에서 선호)
+# mysqlclient>=2.2.4
+
+# === 보안 관련 (비밀번호 해싱 등) ===
+passlib[bcrypt]>=1.7.4
+python-jose[cryptography]>=3.3.0  # JWT 인증용
+
+# === 타입 검증 및 데이터 직렬화 ===
+pydantic>=2.7.1
+
+# === 클라우드 배포 및 기타 ===
+gunicorn>=22.0.0           # 배포용 WSGI 서버 (Cloud Run, EC2 등)
+aiofiles>=23.2.1           # 비동기 파일 업로드 대응 (선택)
+httpx>=0.27.0              # async HTTP client (선택)
+
+# === CORS 처리 ===
+fastapi[all]>=0.110.0
+
+# === 템플릿 사용 시 (Jinja2 등) ===
+# jinja2>=3.1.3
+
+# === 로깅 (옵션) ===
+loguru>=0.7.2

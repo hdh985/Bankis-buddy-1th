@@ -1,0 +1,52 @@
+name: Backend Deploy to GCP VM
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'buddy/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker image
+        working-directory: ./buddy
+        run: |
+          docker build -t buddy-app .
+
+      - name: Save Docker image as tar
+        run: |
+          docker save buddy-app > buddy.tar
+
+      - name: Upload Docker image to GCP VM
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.GCP_VM_IP }}
+          username: ${{ secrets.GCP_VM_USER }}
+          key: ${{ secrets.GCP_VM_SSH_KEY }}
+          source: buddy.tar
+          target: ~/buddy
+
+      - name: SSH and run container
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.GCP_VM_IP }}
+          username: ${{ secrets.GCP_VM_USER }}
+          key: ${{ secrets.GCP_VM_SSH_KEY }}
+          script: |
+            docker load < ~/buddy/buddy.tar
+            docker stop buddy-app || true
+            docker rm buddy-app || true
+            docker run -d \
+              --name buddy-app \
+              -p 8000:8000 \
+              -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
+              buddy-app

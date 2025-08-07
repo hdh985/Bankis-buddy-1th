@@ -1,13 +1,256 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ko">
   <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="description" content="AI와 함께하는 커리어 성장 플랫폼 - Buddy" />
+    <meta name="keywords" content="커리어, AI, 챗봇, 포트폴리오, 면접, 개발자, 디자이너, 마케터" />
+    <meta name="author" content="Buddy Team" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://buddy-career.com/" />
+    <meta property="og:title" content="Buddy - AI 커리어 성장 파트너" />
+    <meta property="og:description" content="AI와 함께하는 스마트한 커리어 성장 플랫폼" />
+    <meta property="og:image" content="%PUBLIC_URL%/og-image.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://buddy-career.com/" />
+    <meta property="twitter:title" content="Buddy - AI 커리어 성장 파트너" />
+    <meta property="twitter:description" content="AI와 함께하는 스마트한 커리어 성장 플랫폼" />
+    <meta property="twitter:image" content="%PUBLIC_URL%/twitter-image.png" />
+
+    <!-- PWA 관련 -->
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Inter 폰트 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- 추가 메타 태그 -->
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="Korean" />
+    <meta name="revisit-after" content="7 days" />
+    
+    <!-- iOS 관련 -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Buddy" />
+    
+    <!-- Android 관련 -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="Buddy" />
+    
+    <!-- Microsoft 타일 -->
+    <meta name="msapplication-TileColor" content="#2563eb" />
+    <meta name="msapplication-config" content="%PUBLIC_URL%/browserconfig.xml" />
+    
+    <title>Buddy - AI 커리어 성장 파트너</title>
+    
+    <style>
+      /* 로딩 스크린 스타일 */
+      #loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        color: white;
+        font-family: 'Inter', sans-serif;
+      }
+      
+      .loading-logo {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        opacity: 0;
+        animation: fadeInUp 0.8s ease-out forwards;
+      }
+      
+      .loading-text {
+        font-size: 1rem;
+        opacity: 0.8;
+        margin-bottom: 2rem;
+        animation: fadeInUp 0.8s ease-out 0.2s forwards;
+        opacity: 0;
+      }
+      
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-top: 3px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite, fadeInUp 0.8s ease-out 0.4s forwards;
+        opacity: 0;
+      }
+      
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      /* 로딩 완료 후 숨김 */
+      .loading-hidden {
+        opacity: 0;
+        transition: opacity 0.5s ease-out;
+        pointer-events: none;
+      }
+      
+      /* 다크 모드 준비 */
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: #0f172a;
+          color: #f1f5f9;
+        }
+      }
+      
+      /* 기본 스타일 리셋 */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+          'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background-color: #f9fafb;
+      }
+      
+      /* 스크롤바 스타일 */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      
+      ::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+      }
+      
+      ::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+      }
+    </style>
   </head>
   <body>
+    <noscript>
+      <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+        <h1>JavaScript가 필요합니다</h1>
+        <p>Buddy 앱을 사용하려면 브라우저에서 JavaScript를 활성화해주세요.</p>
+        <p>You need to enable JavaScript to run this app.</p>
+      </div>
+    </noscript>
+    
+    <!-- 로딩 스크린 -->
+    <div id="loading-screen">
+      <div class="loading-logo">Buddy</div>
+      <div class="loading-text">AI 커리어 성장 파트너</div>
+      <div class="loading-spinner"></div>
+    </div>
+    
+    <!-- React 앱이 마운트될 루트 엘리먼트 -->
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    
+    <script>
+      // 로딩 스크린 제거 함수
+      function hideLoadingScreen() {
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+          loadingScreen.classList.add('loading-hidden');
+          setTimeout(() => {
+            loadingScreen.remove();
+          }, 500);
+        }
+      }
+      
+      // React 앱 로드 완료 시 로딩 스크린 제거
+      window.addEventListener('load', () => {
+        // 최소 1초는 로딩 스크린 표시
+        setTimeout(hideLoadingScreen, 1000);
+      });
+      
+      // 에러 발생 시에도 로딩 스크린 제거
+      window.addEventListener('error', hideLoadingScreen);
+      
+      // 서비스 워커 등록 (PWA 지원)
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js')
+            .then(function(registration) {
+              console.log('SW registered: ', registration);
+            })
+            .catch(function(registrationError) {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+      
+      // 앱 설치 프롬프트 (PWA)
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        // 나중에 설치 버튼을 보여줄 수 있음
+      });
+      
+      // 다크 모드 감지 및 테마 색상 변경
+      function updateThemeColor() {
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+        if (themeColorMeta) {
+          themeColorMeta.content = isDark ? '#0f172a' : '#2563eb';
+        }
+      }
+      
+      // 초기 테마 색상 설정
+      updateThemeColor();
+      
+      // 테마 변경 감지
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateThemeColor);
+      
+      // 성능 모니터링
+      if ('performance' in window) {
+        window.addEventListener('load', () => {
+          setTimeout(() => {
+            const perfData = performance.getEntriesByType('navigation')[0];
+            if (perfData) {
+              console.log('Page load time:', perfData.loadEventEnd - perfData.loadEventStart, 'ms');
+            }
+          }, 0);
+        });
+      }
+    </script>
   </body>
 </html>
