@@ -5,7 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import logo from '../../assets/logo.png';
 
 const Header = ({ onShowLogin }) => {
-  
+  const { user, isAdmin, logout } = useAuth();
 
   return (
     <div className="bg-blue-600 text-white p-6 rounded-b-3xl">
