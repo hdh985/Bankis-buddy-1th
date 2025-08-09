@@ -24,28 +24,40 @@ jobs:
       - name: Save & compress Docker image
         run: docker save buddy-app:latest | gzip > buddy.tar.gz
 
-      # ✅ 원문 개인키를 파일로 저장하고 유효성 검사 → key_path 출력
-      - name: Write SSH key (raw → file) and validate
+      # 🔐 원문 SSH 개인키(시크릿) → 파일 저장 + CRLF 정규화 + 유효성 검사 → key_path 출력
+      - name: Write SSH key (raw → file) normalize and validate
         id: write_key
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p "$GITHUB_WORKSPACE/.ssh"
-          install -m 600 /dev/null "$GITHUB_WORKSPACE/.ssh/id_ed25519"
-          cat <<'EOF' > "$GITHUB_WORKSPACE/.ssh/id_ed25519"
+          KEY="$GITHUB_WORKSPACE/.ssh/id_ed25519"
+
+          # 1) 시크릿(원문 키; BEGIN/END 포함)을 그대로 파일에 씀
+          cat > "$KEY" <<'__RAWKEY__'
           ${{ secrets.GCP_VM_SSH_KEY }}
-          EOF
-          chmod 600 "$GITHUB_WORKSPACE/.ssh/id_ed25519"
-          # 유효성 검사 (여기서 실패하면 시크릿 내용 문제)
-          ssh-keygen -y -f "$GITHUB_WORKSPACE/.ssh/id_ed25519" > "$GITHUB_WORKSPACE/.ssh/id_ed25519.pub"
-          echo "KEY_PATH=$GITHUB_WORKSPACE/.ssh/id_ed25519" >> "$GITHUB_OUTPUT"
+          __RAWKEY__
+
+          # 2) 윈도우 개행(CRLF) 제거
+          sed -i 's/\r$//' "$KEY"
+
+          # 3) 권한
+          chmod 600 "$KEY"
+
+          # 4) 유효성 검사 (여기서 실패하면 시크릿 내용이 잘못된 것)
+          head -n1 "$KEY"
+          tail -n1 "$KEY"
+          ssh-keygen -y -f "$KEY" > "$GITHUB_WORKSPACE/.ssh/id_ed25519.pub"
+
+          # 5) key_path로 전달
+          echo "KEY_PATH=$KEY" >> "$GITHUB_OUTPUT"
 
       - name: Prepare target dir on VM
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.GCP_VM_IP }}
           username: ${{ secrets.GCP_VM_USER }}
-          port: ${{ secrets.GCP_VM_SSH_PORT }}
+          port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
           key_path: ${{ steps.write_key.outputs.KEY_PATH }}
           script: |
             set -e
@@ -56,7 +68,7 @@ jobs:
         with:
           host: ${{ secrets.GCP_VM_IP }}
           username: ${{ secrets.GCP_VM_USER }}
-          port: ${{ secrets.GCP_VM_SSH_PORT }}
+          port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
           key_path: ${{ steps.write_key.outputs.KEY_PATH }}
           source: buddy.tar.gz
           target: ~/buddy
@@ -69,7 +81,7 @@ jobs:
         with:
           host: ${{ secrets.GCP_VM_IP }}
           username: ${{ secrets.GCP_VM_USER }}
-          port: ${{ secrets.GCP_VM_SSH_PORT }}
+          port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
           key_path: ${{ steps.write_key.outputs.KEY_PATH }}
           script: |
             set -euo pipefail
@@ -85,3 +97,15 @@ jobs:
               -e OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
               buddy-app:latest
             docker image prune -f || true
+
+      # (선택) 헬스체크: 엔드포인트에 맞게 수정
+      # - name: Health check
+      #   uses: appleboy/ssh-action@v1.0.0
+      #   with:
+      #     host: ${{ secrets.GCP_VM_IP }}
+      #     username: ${{ secrets.GCP_VM_USER }}
+      #     port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
+      #     key_path: ${{ steps.write_key.outputs.KEY_PATH }}
+      #     script: |
+      #       set -e
+      #       curl -fsS http://localhost:8000/health || (docker logs --tail 200 buddy-app && exit 1)

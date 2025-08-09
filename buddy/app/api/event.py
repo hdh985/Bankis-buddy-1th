@@ -81,7 +81,7 @@ def delete_event(event_id: int, db: Session = Depends(get_db), user=Depends(get_
     return {"message": "이벤트가 성공적으로 삭제 됐습니다"}
 
 
-# ✅ 12이벤트 D-day 및 상태 분류 로직
+# ✅ 2이벤트 D-day 및 상태 분류 로직
 def _to_event_out(event: Event) -> EventOut:
     today = date.today()
     d_day = (event.end_date - today).days
