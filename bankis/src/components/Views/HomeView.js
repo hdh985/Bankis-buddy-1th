@@ -70,12 +70,12 @@ const HomeView = ({ onNavigate }) => {
             data: {
               items: [
                 {
-                  id: 1, title: 'React 18의 새로운 기능과 성능 최적화', category: '프론트엔드',
-                  author: '김개발', team: '1조', likes: 124, comments: 18, readTime: '8분', thumbnail: 'bg-blue-100'
+                  id: 1, title: '한국투자증권 뱅키스에 대해 알려주세요!', category: '한국투자증권',
+                  author: '김경민', team: '1조', likes: 124, comments: 18, readTime: '8분', thumbnail: 'bg-blue-100'
                 },
                 {
-                  id: 2, title: 'UX/UI 디자인 시스템 구축하기', category: '디자인',
-                  author: '이디자인', team: '2조', likes: 156, comments: 34, readTime: '10분', thumbnail: 'bg-purple-100'
+                  id: 2, title: 'PB가 되려면 어떻게 해야되나요?', category: '진로',
+                  author: '한국이', team: '2조', likes: 156, comments: 34, readTime: '10분', thumbnail: 'bg-purple-100'
                 },
               ]
             }
