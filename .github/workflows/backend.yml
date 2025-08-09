@@ -26,23 +26,14 @@ jobs:
         run: |
           docker save buddy-app:latest | gzip > buddy.tar.gz
 
-      # 🔐 SSH 개인키(base64) → 파일 복원
-      - name: Write SSH key
-        id: write_key
-        shell: bash
-        run: |
-          mkdir -p "$RUNNER_TEMP"
-          printf '%s' "${{ secrets.GCP_VM_SSH_KEY_B64 }}" | base64 -d > "$RUNNER_TEMP/id_ed25519"
-          chmod 600 "$RUNNER_TEMP/id_ed25519"
-          echo "KEY_PATH=$RUNNER_TEMP/id_ed25519" >> $GITHUB_OUTPUT
-
       - name: Prepare target dir on VM
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.GCP_VM_IP }}
           username: ${{ secrets.GCP_VM_USER }}
-          port: 22
-          key_path: ${{ steps.write_key.outputs.KEY_PATH }}
+          port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
+          key: ${{ secrets.GCP_VM_SSH_KEY }}               # 🔑 개인키 원문(멀티라인)
+          # passphrase: ${{ secrets.GCP_VM_SSH_PASSPHRASE }} # 사용했다면 추가
           script: |
             set -e
             mkdir -p ~/buddy
@@ -52,8 +43,9 @@ jobs:
         with:
           host: ${{ secrets.GCP_VM_IP }}
           username: ${{ secrets.GCP_VM_USER }}
-          port: 22
-          key_path: ${{ steps.write_key.outputs.KEY_PATH }}
+          port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
+          key: ${{ secrets.GCP_VM_SSH_KEY }}               # 🔑
+          # passphrase: ${{ secrets.GCP_VM_SSH_PASSPHRASE }}
           source: buddy.tar.gz
           target: ~/buddy
           overwrite: true
@@ -65,8 +57,9 @@ jobs:
         with:
           host: ${{ secrets.GCP_VM_IP }}
           username: ${{ secrets.GCP_VM_USER }}
-          port: 22
-          key_path: ${{ steps.write_key.outputs.KEY_PATH }}
+          port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
+          key: ${{ secrets.GCP_VM_SSH_KEY }}               # 🔑
+          # passphrase: ${{ secrets.GCP_VM_SSH_PASSPHRASE }}
           script: |
             set -euo pipefail
             cd ~/buddy
