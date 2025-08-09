@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "./static/css/main.020170a0.css",
+    "main.js": "./static/js/main.cc9e4428.js",
+    "static/js/453.e1d7528e.chunk.js": "./static/js/453.e1d7528e.chunk.js",
+    "static/media/hankuk.png": "./static/media/hankuk.85551604f43dae70ec18.png",
+    "static/media/logo.png": "./static/media/logo.230a472c2b31d76fe888.png",
+    "index.html": "./index.html",
+    "main.020170a0.css.map": "./static/css/main.020170a0.css.map",
+    "main.cc9e4428.js.map": "./static/js/main.cc9e4428.js.map",
+    "453.e1d7528e.chunk.js.map": "./static/js/453.e1d7528e.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.020170a0.css",
+    "static/js/main.cc9e4428.js"
+  ]
+}

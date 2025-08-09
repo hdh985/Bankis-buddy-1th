@@ -7,7 +7,7 @@ const BottomNavigation = ({ currentView, onNavigate }) => {
     { icon: Home, label: '홈', view: 'home' },
     { icon: BookOpen, label: '현직자 Q&A', view: 'content' },
     { icon: MessageCircle, label: 'AI챗봇', view: 'chat' },
-    { icon: Award, label: '이벤트', view: 'activity' }
+    { icon: Award, label: '오늘의 운세', view: 'activity' }
   ];
 
   return (

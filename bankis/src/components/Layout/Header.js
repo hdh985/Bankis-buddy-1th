@@ -1,6 +1,5 @@
 // src/components/Layout/Header.js
 import React from 'react';
-import { Bell, Search } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import logo from '../../assets/logo.png';
 
@@ -8,45 +7,59 @@ const Header = ({ onShowLogin }) => {
   const { user, isAdmin, logout } = useAuth();
 
   return (
-    <div className="bg-blue-600 text-white p-6 rounded-b-3xl">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-           <div className="flex items-center space-x-2 mb-1">
-            <img
-              src={logo}
-              alt="Logo"
-              className="w-12 h-12"
-            />
-            <h1 className="text-3xl font-bold">Buddy</h1>
+    <header className="relative rounded-b-3xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md">
+      {/* 장식(은은한 글로우) */}
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <span className="absolute -top-10 -left-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+        <span className="absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+      </div>
+
+      <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-5">
+        {/* 로고 + 타이틀 */}
+        {/* 로고 + 타이틀 */}
+        <div className="flex items-start gap-2 sm:gap-3">
+          <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center overflow-hidden rounded-2xl bg-white/10 ring-1 ring-white/20">
+            <img src={logo} alt="Buddy 로고" className="h-8 w-8 sm:h-9 sm:w-9 object-contain" />
           </div>
-          <p className="text-blue-100 text-sm">한국투자증권 뱅키스 버디 1조 No.1</p>
+          <div className="leading-tight">
+            <h1 className="text-2xl font-extrabold tracking-tight">We are BanK!S Buddy!</h1>
+            <p className="text-[13px] text-blue-100">한국투자증권 서포터즈 뱅키스 버디 1기 1조 No.1</p>
+          </div>
         </div>
-        <div className="flex items-center space-x-3">
+
+
+
+        {/* 우측 액션: 로그인/로그아웃만 */}
+        <div className="flex items-center gap-3">
+          {user?.name && (
+            <span className="hidden items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs text-white/90 ring-1 ring-white/20 sm:inline-flex">
+              <span className="truncate max-w-[140px]">{user.name}</span>
+              {isAdmin && (
+                <span className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold">
+                  관리자
+                </span>
+              )}
+            </span>
+          )}
+
           {isAdmin ? (
-            <button 
+            <button
               onClick={logout}
-              className="px-3 py-1 bg-white/20 rounded-full text-xs hover:bg-white/30 transition-colors"
+              className="rounded-full bg-white/20 px-3 py-1 text-xs font-medium text-white backdrop-blur transition hover:bg-white/30 focus:outline-none focus:ring-4 focus:ring-white/30"
             >
               로그아웃
             </button>
           ) : (
-            <button 
+            <button
               onClick={onShowLogin}
-              className="px-3 py-1 bg-white/20 rounded-full text-xs hover:bg-white/30 transition-colors"
+              className="rounded-full bg-white text-blue-700 px-3 py-1 text-xs font-semibold shadow-sm transition hover:shadow focus:outline-none focus:ring-4 focus:ring-white/40"
             >
               로그인
             </button>
           )}
-          <button className="p-2 bg-white/20 rounded-full">
-            <Search className="w-5 h-5" />
-          </button>
-          <button className="p-2 bg-white/20 rounded-full relative">
-            <Bell className="w-5 h-5" />
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
-          </button>
         </div>
       </div>
-    </div>
+    </header>
   );
 };
 
