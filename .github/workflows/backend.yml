@@ -17,15 +17,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # 필요 시 캐시 활용 (선택)
-      # - name: Docker layer cache
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: /tmp/.buildx-cache
-      #     key: ${{ runner.os }}-buildx-${{ github.sha }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-buildx-
-
       - name: Build Docker image
         working-directory: ./buddy
         run: |
@@ -35,22 +26,23 @@ jobs:
         run: |
           docker save buddy-app:latest | gzip > buddy.tar.gz
 
-      # 🔐 SSH 개인키를 base64 시크릿에서 파일로 복원
+      # 🔐 SSH 개인키(base64) → 파일 복원
       - name: Write SSH key
+        id: write_key
         shell: bash
         run: |
           mkdir -p "$RUNNER_TEMP"
-          echo "${{ secrets.GCP_VM_SSH_KEY_B64 }}" | base64 -d > "$RUNNER_TEMP/id_ed25519"
+          printf '%s' "${{ secrets.GCP_VM_SSH_KEY_B64 }}" | base64 -d > "$RUNNER_TEMP/id_ed25519"
           chmod 600 "$RUNNER_TEMP/id_ed25519"
+          echo "KEY_PATH=$RUNNER_TEMP/id_ed25519" >> $GITHUB_OUTPUT
 
-      # (선택) 대상 디렉토리 준비 + docker 권한 이슈 예방
       - name: Prepare target dir on VM
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.GCP_VM_IP }}
-          username: ${{ secrets.GCP_VM_USER }}     # 예: deploy
-          port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
-          key_path: ${{ runner.temp }}/id_ed25519
+          username: ${{ secrets.GCP_VM_USER }}
+          port: 22
+          key_path: ${{ steps.write_key.outputs.KEY_PATH }}
           script: |
             set -e
             mkdir -p ~/buddy
@@ -60,8 +52,8 @@ jobs:
         with:
           host: ${{ secrets.GCP_VM_IP }}
           username: ${{ secrets.GCP_VM_USER }}
-          port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
-          key_path: ${{ runner.temp }}/id_ed25519
+          port: 22
+          key_path: ${{ steps.write_key.outputs.KEY_PATH }}
           source: buddy.tar.gz
           target: ~/buddy
           overwrite: true
@@ -73,19 +65,13 @@ jobs:
         with:
           host: ${{ secrets.GCP_VM_IP }}
           username: ${{ secrets.GCP_VM_USER }}
-          port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
-          key_path: ${{ runner.temp }}/id_ed25519
+          port: 22
+          key_path: ${{ steps.write_key.outputs.KEY_PATH }}
           script: |
             set -euo pipefail
             cd ~/buddy
-
-            # 이미지 로드
             gunzip -c buddy.tar.gz | docker load
-
-            # 기존 컨테이너 정리
             docker rm -f buddy-app || true
-
-            # 컨테이너 실행 (환경변수 주입)
             docker run -d \
               --name buddy-app \
               --restart unless-stopped \
@@ -94,18 +80,4 @@ jobs:
               -e SECRET_KEY="${{ secrets.SECRET_KEY }}" \
               -e OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
               buddy-app:latest
-
-            # (선택) dangling 이미지 청소
             docker image prune -f || true
-
-      # (선택) 간단 헬스체크 - 앱이 200 응답하는지 테스트 엔드포인트 맞춰서 수정
-      # - name: Health check
-      #   uses: appleboy/ssh-action@v1.0.0
-      #   with:
-      #     host: ${{ secrets.GCP_VM_IP }}
-      #     username: ${{ secrets.GCP_VM_USER }}
-      #     port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
-      #     key_path: ${{ runner.temp }}/id_ed25519
-      #     script: |
-      #       set -e
-      #       curl -fsS http://localhost:8000/health || (docker logs --tail 200 buddy-app && exit 1)
