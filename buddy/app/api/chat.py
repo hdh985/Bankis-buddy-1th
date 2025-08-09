@@ -7,7 +7,7 @@ router = APIRouter()
 
 class ChatMessage(BaseModel):
     message: str
-
+#1
 @router.post("/")
 def send_message(data: ChatMessage):  # ✅ 일반 sync 함수로 변경
     try:
