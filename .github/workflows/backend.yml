@@ -19,21 +19,34 @@ jobs:
 
       - name: Build Docker image
         working-directory: ./buddy
-        run: |
-          docker build -t buddy-app:latest .
+        run: docker build -t buddy-app:latest .
 
       - name: Save & compress Docker image
+        run: docker save buddy-app:latest | gzip > buddy.tar.gz
+
+      # ✅ 원문 개인키를 파일로 저장하고 유효성 검사 → key_path 출력
+      - name: Write SSH key (raw → file) and validate
+        id: write_key
+        shell: bash
         run: |
-          docker save buddy-app:latest | gzip > buddy.tar.gz
+          set -euo pipefail
+          mkdir -p "$GITHUB_WORKSPACE/.ssh"
+          install -m 600 /dev/null "$GITHUB_WORKSPACE/.ssh/id_ed25519"
+          cat <<'EOF' > "$GITHUB_WORKSPACE/.ssh/id_ed25519"
+          ${{ secrets.GCP_VM_SSH_KEY }}
+          EOF
+          chmod 600 "$GITHUB_WORKSPACE/.ssh/id_ed25519"
+          # 유효성 검사 (여기서 실패하면 시크릿 내용 문제)
+          ssh-keygen -y -f "$GITHUB_WORKSPACE/.ssh/id_ed25519" > "$GITHUB_WORKSPACE/.ssh/id_ed25519.pub"
+          echo "KEY_PATH=$GITHUB_WORKSPACE/.ssh/id_ed25519" >> "$GITHUB_OUTPUT"
 
       - name: Prepare target dir on VM
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.GCP_VM_IP }}
           username: ${{ secrets.GCP_VM_USER }}
-          port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
-          key: ${{ secrets.GCP_VM_SSH_KEY }}               # 🔑 개인키 원문(멀티라인)
-          # passphrase: ${{ secrets.GCP_VM_SSH_PASSPHRASE }} # 사용했다면 추가
+          port: ${{ secrets.GCP_VM_SSH_PORT }}
+          key_path: ${{ steps.write_key.outputs.KEY_PATH }}
           script: |
             set -e
             mkdir -p ~/buddy
@@ -43,9 +56,8 @@ jobs:
         with:
           host: ${{ secrets.GCP_VM_IP }}
           username: ${{ secrets.GCP_VM_USER }}
-          port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
-          key: ${{ secrets.GCP_VM_SSH_KEY }}               # 🔑
-          # passphrase: ${{ secrets.GCP_VM_SSH_PASSPHRASE }}
+          port: ${{ secrets.GCP_VM_SSH_PORT }}
+          key_path: ${{ steps.write_key.outputs.KEY_PATH }}
           source: buddy.tar.gz
           target: ~/buddy
           overwrite: true
@@ -57,9 +69,8 @@ jobs:
         with:
           host: ${{ secrets.GCP_VM_IP }}
           username: ${{ secrets.GCP_VM_USER }}
-          port: ${{ secrets.GCP_VM_SSH_PORT || 22 }}
-          key: ${{ secrets.GCP_VM_SSH_KEY }}               # 🔑
-          # passphrase: ${{ secrets.GCP_VM_SSH_PASSPHRASE }}
+          port: ${{ secrets.GCP_VM_SSH_PORT }}
+          key_path: ${{ steps.write_key.outputs.KEY_PATH }}
           script: |
             set -euo pipefail
             cd ~/buddy
