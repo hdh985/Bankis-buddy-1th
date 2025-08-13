@@ -1,46 +1,48 @@
 // src/services/api.js
 
-// axios 미사용 → 제거
-// import axios from 'axios';
-
+// ==============================
+// Base URL 설정
+// ==============================
 const RAW_BASE = process.env.REACT_APP_API_URL || 'https://34.47.66.169.sslip.io/api';
 
-// 1) base URL 정규화: 끝 슬래시 제거
-const NORMALIZED_BASE = (RAW_BASE || '').replace(/\/+$/, '');
+// 1) 끝 슬래시 제거 + http를 https로 강제 변환
+const API_BASE_URL = (RAW_BASE || '')
+  .replace(/\/+$/, '')              // 끝 슬래시 제거
+  .replace(/^http:\/\//, 'https://'); // Mixed Content 방지
 
-// 2) HTTPS 강제: 페이지가 https이면 API도 https 아니면 에러(혼합콘텐츠 방지)
+// 2) 페이지가 https이면 API도 반드시 https
 if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
-  if (NORMALIZED_BASE.startsWith('http://')) {
-    console.error(`[API] Mixed Content 방지: API_BASE_URL이 http입니다 → ${NORMALIZED_BASE}`);
-    // 필요 시 자동 변환 (원치 않으면 throw로 교체)
-    // throw new Error('API_BASE_URL must be HTTPS on HTTPS pages');
+  if (API_BASE_URL.startsWith('http://')) {
+    console.error(`[API] Mixed Content 방지: API_BASE_URL이 http입니다 → ${API_BASE_URL}`);
   }
 }
 
-// 3) 유틸: endpoint 결합 (/ 중복/누락 방지)
+// ==============================
+// URL/쿼리 유틸
+// ==============================
 function joinURL(base, endpoint) {
   const b = base.replace(/\/+$/, '');
   const e = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
   return `${b}${e}`;
 }
 
-// 4) 유틸: 쿼리스트링 안전 생성
 function toQuery(params) {
   if (!params) return '';
   const usp = new URLSearchParams();
   Object.entries(params).forEach(([k, v]) => {
     if (v === undefined || v === null) return;
-    // 객체가 오면 id나 value로 안전 처리 (필요에 맞게 조절)
-    const val =
-      typeof v === 'object'
-        ? (v.id ?? v.value ?? JSON.stringify(v))
-        : v;
+    const val = typeof v === 'object'
+      ? (v.id ?? v.value ?? JSON.stringify(v))
+      : v;
     usp.append(k, String(val));
   });
   const s = usp.toString();
   return s ? `?${s}` : '';
 }
 
+// ==============================
+// API Client 클래스
+// ==============================
 class APIClient {
   constructor(baseURL) {
     this.baseURL = (baseURL || '').replace(/\/+$/, '');
@@ -54,7 +56,6 @@ class APIClient {
     const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
 
     const finalHeaders = {
-      // FormData일 때는 Content-Type 자동 설정되므로 지정 금지
       ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...(!noAuth && token ? { Authorization: `Bearer ${token}` } : {}),
       ...headers,
@@ -79,7 +80,6 @@ class APIClient {
         } catch { /* noop */ }
         throw new Error(errMsg);
       }
-      // JSON 이외 응답 대비 (필요 시 수정)
       return await res.json();
     } catch (err) {
       console.error('API Error:', err);
@@ -116,20 +116,24 @@ class APIClient {
   }
 }
 
-const apiClient = new APIClient(NORMALIZED_BASE);
+// ==============================
+// API 인스턴스 생성
+// ==============================
+const apiClient = new APIClient(API_BASE_URL);
 
-// ===== Auth API =====
+// ==============================
+// API 모듈 정의
+// ==============================
+
+// Auth API
 export const authAPI = {
   login: (credentials) => apiClient.post('/auth/login', credentials),
   verifyToken: () => apiClient.get('/auth/me'),
 };
 
-// ===== Content API =====
-// teamId가 객체일 수 있으니 여기서 안전하게 처리: { team: string|number }
+// Content API
 export const contentAPI = {
-  // 사용처: contentAPI.getContents(teamId) 또는 contentAPI.getContents({ id: 'bankis' })
   getContents: (teamId) => {
-    // teamId가 값이면 team=teamId, 객체면 team=teamId.id 우선
     const teamParam =
       teamId && typeof teamId === 'object' ? (teamId.id ?? teamId.value) : teamId;
     return apiClient.get('/qna', teamParam ? { team: teamParam } : undefined);
@@ -141,13 +145,12 @@ export const contentAPI = {
   likeContent: (id) => apiClient.post(`/qna/${encodeURIComponent(id)}/like`),
 };
 
-// ===== Chat API =====
+// Chat API
 export const chatAPI = {
-  // 백엔드가 /chat 또는 /chat/ 중 무엇이든 받도록 endpoint는 슬래시 없는 형태 유지
   sendMessage: (message) => apiClient.post('/chat', { message }),
 };
 
-// ===== Activity API =====
+// Activity API
 export const activityAPI = {
   getActivities: () => apiClient.get('/events'),
   createActivity: (data) => apiClient.post('/events/form', data),
