@@ -15,7 +15,10 @@ def startup():
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 모든 Origin 허용
+    allow_origins=[
+        "https://storage.googleapis.com",
+        "https://34.47.66.169.sslip.io"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
