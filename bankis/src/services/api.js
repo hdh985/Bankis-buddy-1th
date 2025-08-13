@@ -1,9 +1,7 @@
 // src/services/api.js
 import axios from 'axios';
 
-const API_BASE_URL =
-  process.env.REACT_APP_API_URL ||
-  `${window.location.origin}/api`;
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://34.47.66.169.sslip.io/api';
 
 
 class APIClient {
