@@ -13,14 +13,14 @@ def startup():
     create_db_and_tables()
 
 
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],  # 모든 Origin 허용
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 @app.middleware("http")
 async def logging_middleware(request: Request, call_next):
     response = await call_next(request)
