@@ -154,7 +154,7 @@ const HomeView = ({ onNavigate }) => {
           <div className="mb-3 flex items-center justify-between">
             <div>
               <h2 className="mb-1 text-lg font-bold text-gray-800">익명 사용자님 환영합니다! 👋</h2>
-              <p className="text-sm text-gray-600">AI 어시스턴트와 함께하는 커리어 성장 여정</p>
+              <p className="text-sm text-gray-600">AI 에이전트와 함께하는 BanK!S Buddy</p>
             </div>
             <button
               onClick={refreshAll}
