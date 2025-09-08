@@ -1,13 +1,14 @@
 // src/components/Layout/BottomNavigation.js
 import React from 'react';
-import { Home, BookOpen, MessageCircle, Award } from 'lucide-react';
+import { Home, BookOpen, MessageCircle, Award, HelpCircle } from 'lucide-react';
 
 const BottomNavigation = ({ currentView, onNavigate }) => {
   const navItems = [
     { icon: Home, label: '홈', view: 'home' },
     { icon: BookOpen, label: '현직자 Q&A', view: 'content' },
     { icon: MessageCircle, label: 'AI챗봇', view: 'chat' },
-    { icon: Award, label: '오늘의 운세', view: 'activity' }
+    { icon: Award, label: '오늘의 운세', view: 'activity' },
+    { icon: HelpCircle, label: '금융 퀴즈 해설집', view: 'quiz' } // ✅ 추가된 부분
   ];
 
   return (
