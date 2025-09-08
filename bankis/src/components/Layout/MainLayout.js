@@ -8,6 +8,7 @@ import ContentView from '../Views/ContentView';
 import ChatView from '../Views/ChatView';
 import ActivityView from '../Views/ActivityView';
 import SearchView from '../Views/SearchView';
+import QuizBook from '../Views/QuizBook.js';   // ✅ QuizBook import 추가
 
 const MainLayout = () => {
   const [currentView, setCurrentView] = useState('home');
@@ -25,6 +26,8 @@ const MainLayout = () => {
         return <ActivityView />;
       case 'search':
         return <SearchView onNavigate={setCurrentView} />;
+      case 'quiz':                       // ✅ 금융 퀴즈 해설집 뷰 추가
+        return <QuizBook />;
       default:
         return <HomeView onNavigate={setCurrentView} />;
     }
