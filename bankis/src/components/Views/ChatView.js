@@ -8,9 +8,14 @@ import buddyAvatar from '../../assets/buddy-avatar.png';
 const ChatView = ({ botAvatarPath = buddyAvatar }) => {
   const { isAdmin } = useAuth();
 
+  // 전송 중 재진입 방지용
+  const sendingRef = useRef(false);
+  // IME(한글 조합) 상태
+  const [isComposing, setIsComposing] = useState(false);
+
   const [messages, setMessages] = useState([
     {
-      id: 1,
+      id: Date.now(),
       type: 'bot',
       content:
         '안녕하세요! 👋 Buddy AI 한국이에요!\n\n제가 여러분의 뱅키스 금융 에이전트가 되어드릴게요! 🚀\n\n궁금한 걸 자유롭게 물어봐 주세요! 😊',
@@ -26,7 +31,7 @@ const ChatView = ({ botAvatarPath = buddyAvatar }) => {
 
   // 아바타 로드 실패 시 폴백
   const [avatarError, setAvatarError] = useState(false);
-  // ✅ 아바타 경로가 바뀌면 에러 상태 리셋
+  // 아바타 경로 변경 시 에러 상태 리셋
   useEffect(() => {
     setAvatarError(false);
   }, [botAvatarPath]);
@@ -35,6 +40,7 @@ const ChatView = ({ botAvatarPath = buddyAvatar }) => {
     endRef.current?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto' });
   };
 
+  // 하단 이동 FAB 표시 로직
   const [showScrollFab, setShowScrollFab] = useState(false);
   useEffect(() => {
     const el = listRef.current;
@@ -51,7 +57,7 @@ const ChatView = ({ botAvatarPath = buddyAvatar }) => {
     scrollToBottom();
   }, [messages, isTyping]);
 
-  // 입력창 자동 높이
+  // 입력창 자동 높이 조절
   useEffect(() => {
     const ta = textareaRef.current;
     if (!ta) return;
@@ -60,11 +66,16 @@ const ChatView = ({ botAvatarPath = buddyAvatar }) => {
   }, [inputMessage]);
 
   const handleSendMessage = async () => {
+    // 재진입 방지
+    if (sendingRef.current) return;
+
     const text = inputMessage.trim();
     if (!text) return;
+    sendingRef.current = true;
 
+    const now = Date.now();
     const userMsg = {
-      id: messages.length + 1,
+      id: now,
       type: 'user',
       content: text,
       timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
@@ -77,7 +88,7 @@ const ChatView = ({ botAvatarPath = buddyAvatar }) => {
     try {
       const res = await chatAPI.sendMessage(text);
       const botMsg = {
-        id: userMsg.id + 1,
+        id: now + 1,
         type: 'bot',
         content: res?.response ?? '답변이 도착했어요.',
         timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
@@ -86,7 +97,7 @@ const ChatView = ({ botAvatarPath = buddyAvatar }) => {
     } catch (err) {
       console.error('Failed to send message:', err);
       const botMsg = {
-        id: messages.length + 2,
+        id: now + 2,
         type: 'bot',
         content: '⚠️ 서버에서 응답을 받을 수 없습니다. 잠시 후 다시 시도해 주세요.',
         timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
@@ -94,10 +105,14 @@ const ChatView = ({ botAvatarPath = buddyAvatar }) => {
       setMessages(prev => [...prev, botMsg]);
     } finally {
       setIsTyping(false);
+      sendingRef.current = false;
     }
   };
 
   const handleKeyDown = (e) => {
+    // IME 조합 중(또는 keyCode 229)에는 Enter 전송 방지
+    if (e.nativeEvent.isComposing || isComposing || e.keyCode === 229) return;
+
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
@@ -248,6 +263,8 @@ const ChatView = ({ botAvatarPath = buddyAvatar }) => {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
+                onCompositionStart={() => setIsComposing(true)}
+                onCompositionEnd={() => setIsComposing(false)}
                 placeholder="대화를 시작해보세요"
                 rows={1}
                 className="max-h-40 w-full resize-none rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none ring-blue-200 transition focus:bg-white focus:ring-2"
@@ -256,10 +273,10 @@ const ChatView = ({ botAvatarPath = buddyAvatar }) => {
 
             <button
               onClick={handleSendMessage}
-              disabled={!inputMessage.trim()}
+              disabled={!inputMessage.trim() || isTyping || sendingRef.current}
               className={[
                 'rounded-full p-3 text-white shadow-lg transition-all',
-                inputMessage.trim()
+                inputMessage.trim() && !isTyping && !sendingRef.current
                   ? 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300/40 animate-[pulse_2.4s_ease-in-out_infinite]'
                   : 'bg-blue-300 cursor-not-allowed opacity-70'
               ].join(' ')}
