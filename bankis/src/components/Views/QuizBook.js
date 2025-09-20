@@ -15,7 +15,7 @@ import {
 const CAMPUS_NAME = "한국외국어대학교";
 const INSTAGRAM_URL =
   "https://www.instagram.com/bankiszone?igsh=MWxhM3JnNW4zYjE4cg==";
-const SURVEY_URL = "https://example.com/your-survey"; // ← 실제 설문 URL로 교체
+const SURVEY_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfr5S5jfAVyFTpw7rBCt658PCI3trtjqm236zGMckcIE7eQQw/viewform?usp=dialog"; // ← 실제 설문 URL로 교체
 
 /* ================= Confetti (no deps) ================= */
 function Confetti({ fireKey }) {
