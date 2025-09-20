@@ -119,7 +119,11 @@ const HomeView = ({ onNavigate }) => {
         </div>
 
         <div className="mt-4 text-center text-xs text-slate-500">
-          이벤트/소식은 퀴즈 내부 인스타그램·설문 버튼에서 확인할 수 있어요.
+        ※ 투자 전 설명 청취 및 상품 설명서 필독 ※ 주식은 예금자보호법에 따라 보호되지 않습니다. ※ 자산가격 변동,환율변동에 따른 원금손실(0~100%) 발생 가능 및 투자자 귀속
+        </div>
+    
+         <div className="mt-4 text-center text-xs text-slate-500">
+        본 콘텐츠는 뱅키스 서포터즈 자체 콘텐츠이며, 어떠한 경제적 대가도 지급받지 않았습나다.
         </div>
       </div>
     </div>
