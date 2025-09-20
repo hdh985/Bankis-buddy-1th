@@ -284,9 +284,9 @@ export default function QuizBook() {
 
           <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-snug">
             {CAMPUS_NAME}와 함께하는{" "}
-            <span className="bg-gradient-to-r from-sky-600 via-indigo-600 to-emerald-600 bg-clip-text text-transparent">
+            <p className="bg-gradient-to-r from-sky-600 via-indigo-600 to-emerald-600 bg-clip-text text-transparent">
               캠퍼스 어택 금융 퀴즈북
-            </span>
+            </p>
           </h1>
 
           <p className="mt-2 text-sm text-slate-600">
