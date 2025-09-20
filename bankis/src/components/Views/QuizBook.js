@@ -290,7 +290,7 @@ export default function QuizBook() {
           </h1>
 
           <p className="mt-2 text-sm text-slate-600">
-            퀴즈로 가볍게 투자 감각 업! 검색과 즐겨찾기로 빠르게 학습하세요.
+            한국투자증권 서포터즈 뱅키스 버디와 함께하는 캠퍼스 어택!
           </p>
 
           {/* stats + actions */}
