@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 
 /* ===================== THEME ===================== */
-const CAMPUS_NAME = "한국외국어대학교";
+const CAMPUS_NAME = "한국외대";
 const INSTAGRAM_URL =
   "https://www.instagram.com/bankiszone?igsh=MWxhM3JnNW4zYjE4cg==";
 const SURVEY_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfr5S5jfAVyFTpw7rBCt658PCI3trtjqm236zGMckcIE7eQQw/viewform?usp=dialog"; // ← 실제 설문 URL로 교체
@@ -279,7 +279,7 @@ export default function QuizBook() {
       >
         <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-sky-50 via-white to-emerald-50 p-5 shadow-sm">
           <div className="inline-flex items-center gap-2 text-xs font-medium text-sky-700 bg-sky-100/70 border border-sky-200 rounded-full px-3 py-1 backdrop-blur">
-            CAMPUS ATTACK · with {CAMPUS_NAME}
+            CAMPUS ATTACK · with 한국외국어대학교
           </div>
 
           <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-snug">
