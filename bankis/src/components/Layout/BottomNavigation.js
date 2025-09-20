@@ -14,7 +14,7 @@ const BottomNavigation = ({ currentView, onNavigate }) => {
     { icon: BookOpen, label: '현직자 Q&A', view: 'content' },
     { icon: MessageCircle, label: 'AI챗봇', view: 'chat' },
     { icon: Award, label: '오늘의 운세', view: 'activity' },
-    { icon: School, label: '금융 퀴즈 해설집', view: 'quiz' } // ✅ 추가된 부분
+    { icon: School, label: '캠퍼스 어택', view: 'quiz' } // ✅ 추가된 부분
   ];
 
   return (
