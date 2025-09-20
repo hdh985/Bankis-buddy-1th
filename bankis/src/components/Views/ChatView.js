@@ -306,3 +306,4 @@ const ChatView = ({ botAvatarPath = buddyAvatar }) => {
 };
 
 export default ChatView;
+
