@@ -8,6 +8,26 @@
     <meta name="theme-color" content="#2563eb" />
     <meta name="description" content="AI와 함께하는 커리어 성장 플랫폼 - Buddy" />
     <title>Buddy - 한국투자증권 뱅키스 서포터즈</title>
+
+    <!-- ✅ GA4: gtag.js 로더 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=
+GTM-583XMV69"></script>
+    <!-- ✅ GA4: 초기 설정 (SPA는 page_view 수동) -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+
+      /* 선택: 쿠키 동의 배너 쓰면 Consent Mode v2 기본값 */
+      gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'analytics_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied'
+      });
+
+      gtag('js', new Date());
+      gtag('config', 'G-XXXX1234', { send_page_view: false }); // ← SPA라 false
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
