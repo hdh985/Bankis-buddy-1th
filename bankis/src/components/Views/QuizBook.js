@@ -278,19 +278,6 @@ export default function QuizBook({ onNavigate }) {
         className={`transition-all duration-700 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}
       >
         <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-sky-50 via-white to-emerald-50 p-5 shadow-sm">
-          {/* 상단 우측: 행운 추첨 버튼 */}
-          <div className="absolute right-5 top-5 z-10">
-            <button
-              onClick={() => onNavigate?.("activity")}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 shadow-sm transition active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              aria-label="행운 추첨으로 이동"
-              title="행운 추첨"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span className="text-sm font-semibold">행운 추첨</span>
-            </button>
-          </div>
-
           <div className="inline-flex items-center gap-2 text-xs font-medium text-sky-700 bg-sky-100/70 border border-sky-200 rounded-full px-3 py-1 backdrop-blur">
             CAMPUS ATTACK · with 한국외국어대학교
           </div>
@@ -491,7 +478,7 @@ export default function QuizBook({ onNavigate }) {
         </div>
       )}
 
-      {/* ===== 하단 고정 인스타 BIG CTA ===== */}
+      {/* ===== 하단 고정 인스타 BIG CTA (중앙) ===== */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30">
         <button
           onClick={handleInstagramClick}
@@ -513,6 +500,27 @@ export default function QuizBook({ onNavigate }) {
           </div>
         </button>
       </div>
+
+      {/* ===== 행운 추첨 · 플로팅 FAB (우하단) ===== */}
+      <button
+        onClick={() => onNavigate?.("activity")}
+        aria-label="행운 추첨으로 이동"
+        title="행운 추첨"
+        className={[
+          "group fixed right-6 z-40 h-14 w-14 rounded-2xl shadow-xl transition",
+          // 중앙 인스타 CTA와 겹치지 않게 기본은 약간 더 위에, 큰 화면에서는 조금 더 아래
+          "bottom-24 sm:bottom-8",
+          "bg-gradient-to-br from-indigo-600 to-sky-600 text-white",
+          "hover:from-indigo-500 hover:to-sky-500 active:scale-95",
+          "focus:outline-none focus:ring-4 focus:ring-sky-300/40",
+        ].join(" ")}
+      >
+        <span className="pointer-events-none absolute inset-0 rounded-2xl ring-2 ring-white/20 blur-[1px]" />
+        <span className="pointer-events-none absolute -inset-3 rounded-3xl bg-sky-500/20 blur-xl opacity-0 group-hover:opacity-100 transition" />
+        <span className="flex h-full w-full items-center justify-center">
+          <Sparkles className="h-6 w-6" />
+        </span>
+      </button>
     </div>
   );
 }
