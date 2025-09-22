@@ -14,9 +14,10 @@ const MainLayout = () => {
   const [currentView, setCurrentView] = useState('home');
   const [showLogin, setShowLogin] = useState(false);
 
-  // ✅ 홈/퀴즈에서는 공용 헤더와 하단 네비 모두 숨김
-  const hideHeader = ['home', 'quiz'].includes(currentView);
-  const hideBottomNav = ['home', 'quiz'].includes(currentView);
+  // ✅ 홈/퀴즈/행운추첨에서는 공용 헤더와 하단 네비 모두 숨김
+  const fullScreenViews = ['home', 'quiz', 'activity'];
+  const hideHeader = fullScreenViews.includes(currentView);
+  const hideBottomNav = fullScreenViews.includes(currentView);
 
   const renderView = () => {
     switch (currentView) {
@@ -31,7 +32,7 @@ const MainLayout = () => {
       case 'search':
         return <SearchView onNavigate={setCurrentView} />;
       case 'quiz':
-        // ✅ 여기! onNavigate를 넘겨줘야 퀴즈북에서 '행운 추첨' 버튼으로 Activity로 이동 가능
+        // ✅ onNavigate를 넘겨야 퀴즈북에서 '행운 추첨' 버튼으로 Activity로 이동 가능
         return <QuizBook onNavigate={setCurrentView} />;
       default:
         return <HomeView onNavigate={setCurrentView} />;
@@ -42,7 +43,7 @@ const MainLayout = () => {
     <>
       <LoginModal show={showLogin} onClose={() => setShowLogin(false)} />
       <div className="flex flex-col h-screen bg-gray-50 max-w-md mx-auto">
-        {/* ✅ 홈/퀴즈가 아닐 때만 헤더 */}
+        {/* ✅ 홈/퀴즈/행운추첨이 아닐 때만 헤더 */}
         {!hideHeader && <Header onShowLogin={() => setShowLogin(true)} />}
 
         {/* 스크롤 영역 */}
@@ -50,9 +51,12 @@ const MainLayout = () => {
           {renderView()}
         </div>
 
-        {/* ✅ 홈/퀴즈가 아닐 때만 하단 네비 */}
+        {/* ✅ 홈/퀴즈/행운추첨이 아닐 때만 하단 네비 */}
         {!hideBottomNav && (
-          <BottomNavigation currentView={currentView} onNavigate={setCurrentView} />
+          <BottomNavigation
+            currentView={currentView}
+            onNavigate={setCurrentView}
+          />
         )}
       </div>
     </>
