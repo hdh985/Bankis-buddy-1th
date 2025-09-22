@@ -31,7 +31,8 @@ const MainLayout = () => {
       case 'search':
         return <SearchView onNavigate={setCurrentView} />;
       case 'quiz':
-        return <QuizBook />;
+        // ✅ 여기! onNavigate를 넘겨줘야 퀴즈북에서 '행운 추첨' 버튼으로 Activity로 이동 가능
+        return <QuizBook onNavigate={setCurrentView} />;
       default:
         return <HomeView onNavigate={setCurrentView} />;
     }

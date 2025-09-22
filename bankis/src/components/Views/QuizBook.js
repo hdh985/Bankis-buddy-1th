@@ -15,7 +15,8 @@ import {
 const CAMPUS_NAME = "한국외대";
 const INSTAGRAM_URL =
   "https://www.instagram.com/bankiszone?igsh=MWxhM3JnNW4zYjE4cg==";
-const SURVEY_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfr5S5jfAVyFTpw7rBCt658PCI3trtjqm236zGMckcIE7eQQw/viewform?usp=dialog"; // ← 실제 설문 URL로 교체
+const SURVEY_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLSfr5S5jfAVyFTpw7rBCt658PCI3trtjqm236zGMckcIE7eQQw/viewform?usp=dialog"; // ← 실제 설문 URL로 교체
 
 /* ================= Confetti (no deps) ================= */
 function Confetti({ fireKey }) {
@@ -133,7 +134,7 @@ const SAMPLE_QUIZZES = [
   // --- 자산배분 ---
   { id: "q_asset_1", question: "코스톨라니의 모형에 따르면 금리가 정점일 때는 채권을 매도하고 부동산을 매수하는 것이 유리하다. (O/X)", answer: "X", explanation: "코스톨라니 달걀은 금리와 자산 선호의 순환을 설명합니다. 단편화된 문장만으로는 일반화가 어렵습니다." },
   // --- 브랜드/뱅키스 ---
-  { id: "q_brand_1", question: "뱅키스는 영업점 방문 없이도 계좌개설이 가능하다. (O/X)", answer: "O", explanation: "뱅키스는 영업점 방문 없이 스마트폰 앱이나 웹에서 빠른 계좌 개설이 가능합니다." },
+  { id: "q_brand_1", question: "뱅키스는 영업점 방문 없이도 계좌개설이 가능하다. (O/X)", answer: "O", explanation: "뱅키스는 영업점 방문 없이 스마트폰 앱이나 웹에서 빠른 계좌 개설이 가능합니다." },
   { id: "q_brand_2", question: "한국투자증권 계좌가 있다면 뱅키스 대학생 모의투자대회에 참가할 수 있다. (O/X)", answer: "X", explanation: "한국투자증권 영업점 계좌만 있다면, 뱅키스 계좌를 개설해야 가능" },
   { id: "q_brand_3", question: "지금(8/1~9/30) 뱅키스 ISA 일임형을 가입하면, 다양한 혜택과 상품을 받을 수 있다. (O/X)", answer: "X", explanation: "ISA 중개형 상품에 한 해, 이벤트 신청 시 다양한 혜택을 받을 수 있다." },
   { id: "q_brand_4", question: "뱅키스 대학생 모의투자 대회는 개인 리그/팀 리그로 구성되어 있고, 중복 참여가 가능하다. (O/X)", answer: "O", explanation: "뱅키스 대학생 모의투자 대회는 개인리그, 팀 리그 동시 참여가 가능하며, 개인/팀 중복 수상 가능" },
@@ -143,7 +144,8 @@ const SAMPLE_QUIZZES = [
 ];
 
 /* ===================== MAIN ===================== */
-export default function QuizBook() {
+// onNavigate: (viewId: string) => void
+export default function QuizBook({ onNavigate }) {
   const [query, setQuery] = useState("");
   const [openIds, setOpenIds] = useState(new Set());
   const [bookmarks, setBookmarks] = useState(new Set());
@@ -273,11 +275,22 @@ export default function QuizBook() {
 
       {/* HERO */}
       <div
-        className={`transition-all duration-700 ${
-          mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
-        }`}
+        className={`transition-all duration-700 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}
       >
         <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-sky-50 via-white to-emerald-50 p-5 shadow-sm">
+          {/* 상단 우측: 행운 추첨 버튼 */}
+          <div className="absolute right-5 top-5 z-10">
+            <button
+              onClick={() => onNavigate?.("activity")}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 shadow-sm transition active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              aria-label="행운 추첨으로 이동"
+              title="행운 추첨"
+            >
+              <Sparkles className="w-4 h-4" />
+              <span className="text-sm font-semibold">행운 추첨</span>
+            </button>
+          </div>
+
           <div className="inline-flex items-center gap-2 text-xs font-medium text-sky-700 bg-sky-100/70 border border-sky-200 rounded-full px-3 py-1 backdrop-blur">
             CAMPUS ATTACK · with 한국외국어대학교
           </div>
@@ -441,36 +454,24 @@ export default function QuizBook() {
                       aria-label={opened ? "해설 접기" : "해설 보기"}
                       title={opened ? "해설 접기" : "해설 보기"}
                     >
-                      {opened ? (
-                        <ChevronUp className="w-5 h-5" />
-                      ) : (
-                        <ChevronDown className="w-5 h-5" />
-                      )}
+                      {opened ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                     </button>
                   </div>
                 </div>
               </div>
 
               {/* collapsible */}
-              <div
-                className={`grid transition-[grid-template-rows] duration-300 ease-out ${
-                  opened ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-                }`}
-              >
+              <div className={`grid transition-[grid-template-rows] duration-300 ease-out ${opened ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
                 <div className="overflow-hidden">
                   <div className="p-4 sm:p-5 space-y-3">
                     <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-3">
                       <div className="text-emerald-700 font-medium">정답</div>
-                      <div className="text-emerald-800 mt-0.5 leading-relaxed">
-                        {q.answer}
-                      </div>
+                      <div className="text-emerald-800 mt-0.5 leading-relaxed">{q.answer}</div>
                     </div>
 
                     <div className="rounded-xl bg-slate-50 border border-slate-200 p-3">
                       <div className="text-slate-800 font-medium">해설</div>
-                      <p className="text-slate-700 mt-1 leading-relaxed">
-                        {q.explanation}
-                      </p>
+                      <p className="text-slate-700 mt-1 leading-relaxed">{q.explanation}</p>
                     </div>
                   </div>
                 </div>
